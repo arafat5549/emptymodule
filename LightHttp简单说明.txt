@@ -1,0 +1,21 @@
+maven分模块:
+
+简单说明：
+使用到的框架包:
+netty 用于启动Http服务器
+gson  用于序列化处理
+javaassist 用于反射处理
+spring-context 用于包的扫描(可以自己编写可以省不少包 主要是spring相关)
+logj/slf4j  日记处理包
+common-lang3/guava 通用的工具包
+
+模块架构：
+<!-- 基础模块-代码自动生成和通用工具类（暂时无用）
+<module>empty-common</module>-->
+<!-- netty轻量级HTTP服务器 -->
+<module>empty-lighthttp</module>
+<!-- web工程 继承了empty-lighthttp模块 -->
+<module>empty-web</module>
+
+示例启动在：
+empty-web下的 test/java/http/HttpTest.java

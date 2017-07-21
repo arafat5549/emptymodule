@@ -88,7 +88,7 @@ public class RestRequestPathDispatcher<T> implements  IRequestPathDispather {
         apiMap = new HashMap<>();
         beanMap = new HashMap<>();
         paramNamesMap = new HashMap<>();
-
+        LOGGER.info("所有URL路径绑定如下:");
         Map<String, Object> allBeans = this.context.getBeansWithAnnotation(Rest.class);
        // LOGGER.info("allBeans="+allBeans);
         for (Object instance : allBeans.values()) {
@@ -112,7 +112,7 @@ public class RestRequestPathDispatcher<T> implements  IRequestPathDispather {
             if (rest != null) {
                 //获取全路径+
                 String wholePath = (restClz!=null ? restClz.path() : "") +  rest.path();
-                LOGGER.info("Binding url " +wholePath + " to " + method);
+                LOGGER.info("Binding url [" +wholePath + "] to {" + method+"}");
                 apiMap.put(wholePath, method);
                 // 解析参数名，也就是http请求所带的参数名
                 String[] paramNames = parseParamNames(method);

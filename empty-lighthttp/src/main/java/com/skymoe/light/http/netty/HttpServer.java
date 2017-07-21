@@ -58,12 +58,11 @@ public class HttpServer {
 
 	public void run() throws Exception {
 		if (LOGGER.isInfoEnabled()) {
-			LOGGER.info("Server starting up at port: " + this.port);
-			///System.out.println("Server starting up at port: " + this.port);
+			LOGGER.info("LightHttp服务器运行在端口: " + this.port);
 		}
-		// Initialize exception logger
+		// 初始化日记
 		initExceptionLogger();
-		// Configure the server. Boss线程组加工人线程组
+		// Boss线程组加工人线程组
 		EventLoopGroup bossGroup = new NioEventLoopGroup();
 		EventLoopGroup workerGroup = new NioEventLoopGroup();
 		try {
@@ -81,7 +80,7 @@ public class HttpServer {
 	}
 
 	/**
-	 * Initialize exception logger
+	 * 初始化错误日记
 	 */
 	private void initExceptionLogger() {
 		if (ExceptionLoggerContext.getExceptionLogger() == null) {
