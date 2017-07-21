@@ -1,6 +1,7 @@
 package http;
 
 import com.skymoe.light.http.RestRequestPathDispatcher;
+import com.skymoe.light.http.enums.SerialType;
 import com.skymoe.light.http.netty.HttpServer;
 import com.skymoe.light.http.netty.HttpServerInitializer;
 import com.skymoe.light.http.serial.GsonObjectSerializer;
@@ -19,7 +20,7 @@ public class HttpTest {
     public static void jsonTest() {
         GsonObjectSerializer serial = new GsonObjectSerializer();
         User user = new User(1,"wang");
-        String str = serial.serial(user);
+        String str = serial.serial(user, SerialType.XML);
         System.out.println(str);
     }
 
@@ -45,8 +46,8 @@ public class HttpTest {
 
 
     public static void main(String[] args) {
-        //jsonTest();
+        jsonTest();
 
-        startNettyServer(9090);
+        //startNettyServer(9090);
     }
 }

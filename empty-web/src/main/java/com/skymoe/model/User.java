@@ -1,9 +1,14 @@
 package com.skymoe.model;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * Created by Administrator on 2017/7/21.
  */
+
+@XmlRootElement
 public class User {
+    public User(){}
     public User(Integer id, String name) {
         this.id = id;
         this.name = name;

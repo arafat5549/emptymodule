@@ -1,5 +1,7 @@
 package com.skymoe.light.http.serial;
 
+import com.skymoe.light.http.enums.SerialType;
+
 /**
  * Object to string 序列器
  * 
@@ -13,7 +15,7 @@ public interface IObjectSerializer {
 	 * @param obj
 	 * @return
 	 */
-	String serial(Object obj);
+	String serial(Object obj, SerialType type);
 
 	/**
 	 * 序列化的Media-Type

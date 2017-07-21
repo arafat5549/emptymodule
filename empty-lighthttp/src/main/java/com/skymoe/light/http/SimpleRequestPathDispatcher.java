@@ -1,6 +1,7 @@
 package com.skymoe.light.http;
 
 import com.skymoe.light.http.annotation.RequestBean;
+import com.skymoe.light.http.enums.SerialType;
 import com.skymoe.light.http.request.IRequestHandler;
 import com.skymoe.light.http.request.LightHttpRequest;
 import com.skymoe.light.http.serial.IObjectSerializer;
@@ -90,7 +91,7 @@ public class SimpleRequestPathDispatcher<T> implements IRequestPathDispather {
 		System.out.println("handler="+handler+","+path);
 		System.out.println("pathMappings="+pathMappings);
 		if (handler != null) {
-			return this.serializer.serial(handler.handle(lightrequest));
+			return this.serializer.serial(handler.handle(lightrequest), SerialType.JSON);
 		}
 		return EMPTY_STRING;
 	}

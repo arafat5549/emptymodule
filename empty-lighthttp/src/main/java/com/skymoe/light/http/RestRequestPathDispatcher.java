@@ -1,6 +1,8 @@
 package com.skymoe.light.http;
 
 import com.skymoe.light.http.annotation.Rest;
+import com.skymoe.light.http.enums.RequestMethod;
+import com.skymoe.light.http.enums.SerialType;
 import com.skymoe.light.http.exception.RestException;
 import com.skymoe.light.http.request.LightHttpRequest;
 import com.skymoe.light.http.serial.IObjectSerializer;
@@ -36,8 +38,11 @@ public class RestRequestPathDispatcher<T> implements  IRequestPathDispather {
     private Map<String, Method> apiMap;
     // Controller实例，一些单例的集合
     private Map<Class<?>, Object> beanMap;
-    // 各Controller方法参数名集合
+    // 各Controller 方法参数名集合
     private Map<String, String[]> paramNamesMap;
+    //
+
+
     //spring的context用于注解的扫描(可不用)
     private ApplicationContext context;
     //序列化的类
@@ -68,15 +73,23 @@ public class RestRequestPathDispatcher<T> implements  IRequestPathDispather {
             //System.out.println("apiMap="+apiMap);
             //System.out.println("beanMap="+beanMap);
             //System.out.println("paramNamesMap="+paramNamesMap);
+           // request.getMethod().name().equals()
+
             Object obj = invoke(request);// 触发controller逻辑
-            //System.out.println(obj);
-            return this.serializer.serial(obj); //返回JSON字符串
+
+            String uri = request.getUri();
+            int index = uri.indexOf('?');
+            String urlpath = index >= 0 ? uri.substring(0, index) : uri;
+            Method method = apiMap.get(urlpath);
+            Rest rest = method.getAnnotation(Rest.class);
+            return this.serializer.serial(obj,rest.serial()); //返回JSON字符串
         }
         return null;
     }
 
     @Override
-    public String getContentType() {
+    public String getContentType()
+    {
         return this.serializer.getMediaType() + CONTENT_TYPE_CHARSET_PART;
     }
     /**
@@ -99,10 +112,14 @@ public class RestRequestPathDispatcher<T> implements  IRequestPathDispather {
             parseMethods(clz);
         }
 
+        LOGGER.info("apiMap:"+apiMap);
+        LOGGER.info("beanMap:"+beanMap);
+        LOGGER.info("paramNamesMap:"+paramNamesMap);
     }
 
     //解析方法
     private void parseMethods(Class<?> clz){
+        //定义在类上的注解
         Rest restClz = clz.getAnnotation(Rest.class);
         //System.out.println("restClz="+restClz.path());
 
@@ -153,24 +170,40 @@ public class RestRequestPathDispatcher<T> implements  IRequestPathDispather {
         // 获取请求路径，映射到Controller的方法
         String path = index >= 0 ? uri.substring(0, index) : uri;
 
-        //LOGGER.info("invoke=="+path);
         Method method = apiMap.get(path);
 
         if (method == null) {  // 没有注册该方法，直接抛异常
             throw new RestException("No method binded for request " + path);
         }
         try {
+
+            //1.检测动作是否匹配
+            boolean flag = false;
+            Rest rest = method.getAnnotation(Rest.class);
+            for (RequestMethod rm : rest.method()){
+                if( request.getMethod().name().equals(rm.type())){
+                    flag = true;
+                    break;
+                }
+            }
+            if(!flag){
+                return path+",无匹配参数类型:"+request.getMethod().name();
+            }
+            //2.
+
+
             Class<?>[] argClzs = method.getParameterTypes(); // 参数类型
             Object[] args = new Object[argClzs.length]; // 这里放实际的参数值
             String[] paramNames = paramNamesMap.get(path); // 参数名
-
             // 这个是netty封装的url参数解析工具，当然也可以自己split(",")
             Map<String, List<String>> requestParams = new QueryStringDecoder(uri).parameters();
-
             // 逐个把请求参数解析成对应方法参数的类型
             for (int i = 0; i < argClzs.length; i++) {
                 Class<?> argClz = argClzs[i];
                 String paramName = paramNames[i];
+
+                System.out.println(paramName+"-------------------------"+requestParams.get(paramName));
+
                 if (!requestParams.containsKey(paramName)
                         || CollUtil.isEmpty(requestParams.get(paramName))  ) {
                     // 没有找到对应参数，则默认取null。愿意的话也可以定义类似@Required或者@DefaultValue之类的注解来设置自定义默认值

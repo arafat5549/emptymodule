@@ -1,5 +1,7 @@
 package com.skymoe.light.http.annotation;
 
+import com.skymoe.light.http.enums.RequestMethod;
+import com.skymoe.light.http.enums.SerialType;
 import org.springframework.stereotype.Component;
 
 import java.lang.annotation.ElementType;
@@ -22,5 +24,12 @@ public @interface Rest {
      * @return
      */
     String path() default "";
-
+    /**
+     * Rest动作 即GET方法/POST方法 ,只对在方法上的注解奇效
+     */
+    RequestMethod[] method() default {};
+    /**
+     * 输出类型#默认为JSON类型,   只对在方法上的注解奇效
+     */
+   SerialType serial() default SerialType.JSON;
 }

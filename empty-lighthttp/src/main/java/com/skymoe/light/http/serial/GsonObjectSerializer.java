@@ -1,7 +1,9 @@
 package com.skymoe.light.http.serial;
 
+import com.skymoe.light.http.enums.SerialType;
 import com.skymoe.light.http.util.GsonBuilderProxy;
 import com.google.gson.Gson;
+import com.skymoe.light.http.util.XmlMapper;
 
 /**
  * Gson 序列化实现
@@ -17,7 +19,10 @@ public class GsonObjectSerializer implements IObjectSerializer {
 	}
 
 	@Override
-	public String serial(Object obj) {
+	public String serial(Object obj, SerialType type) {
+		if(type == SerialType.XML){
+			return XmlMapper.toXml(obj);
+		}
 		return this.gson.toJson(obj);
 	}
 
