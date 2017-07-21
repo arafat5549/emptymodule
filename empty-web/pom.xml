@@ -1,0 +1,45 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <artifactId>EmptyModule-parent</artifactId>
+        <groupId>com.skymoe</groupId>
+        <version>0.0.1-RELEASE</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>EmptyModule-web</artifactId>
+    <packaging>war</packaging>
+    <name>EmptyModule-web</name>
+    <url>http://maven.apache.org</url>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.skymoe</groupId>
+            <artifactId>EmptyModule-lighthttp</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>EmptyModule-web</finalName>
+
+        <plugins>
+
+            <!-- maven-tomcat7服务器插件 -->
+            <plugin>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
+                <version>2.1</version>
+                <configuration>
+                    <port>8888</port>      <!-- 参数maven.tomcat.ajp.port   默认8080-->
+                    <ajpPort>8010</ajpPort><!-- 参数maven.tomcat.port 默认0 -->
+                    <path>/</path>
+                    <uriEncoding>UTF-8</uriEncoding>
+                    <finalName>${project.artifactId}</finalName>
+                    <server>tomcat7</server>
+                    <ignorePackaging>true</ignorePackaging>
+                </configuration>
+            </plugin>
+        </plugins>
+
+    </build>
+</project>
