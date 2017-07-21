@@ -2,12 +2,11 @@ package com.skymoe.web;
 
 import com.skymoe.light.http.annotation.Rest;
 import com.skymoe.model.User;
-import org.springframework.stereotype.Controller;
 
 /**
  * Created by Administrator on 2017/7/21.
  */
-@Controller
+//@Controller
 @Rest(path="/rest")
 public class RestController {
 

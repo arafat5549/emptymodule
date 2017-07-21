@@ -17,7 +17,18 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Http服务启动器
- * 
+ * 用法例子：
+ *
+	 ApplicationContext ctx = new ClassPathXmlApplicationContext("classpath*:spring/spring-mvc.xml");
+	 GsonObjectSerializer serializer = new GsonObjectSerializer();
+	 RestRequestPathDispatcher dispatcher = new RestRequestPathDispatcher(serializer,ctx);
+	 HttpServerInitializer init = new HttpServerInitializer(1,dispatcher);
+	 HttpServer server = new HttpServer(init,port);
+	 try {
+	 server.run();
+	 } catch (Exception e) {
+	 e.printStackTrace();
+	 }
  *
  */
 public class HttpServer {

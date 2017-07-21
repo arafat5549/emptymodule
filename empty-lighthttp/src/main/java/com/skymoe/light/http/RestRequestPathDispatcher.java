@@ -104,12 +104,13 @@ public class RestRequestPathDispatcher<T> implements  IRequestPathDispather {
     //解析方法
     private void parseMethods(Class<?> clz){
         Rest restClz = clz.getAnnotation(Rest.class);
-        System.out.println("restClz="+restClz.path());
+        //System.out.println("restClz="+restClz.path());
 
         for (Method method : clz.getDeclaredMethods()) {
             Rest rest = method.getAnnotation(Rest.class);
             // 遍历所有带@Rest注解的方法
             if (rest != null) {
+                //获取全路径+
                 String wholePath = (restClz!=null ? restClz.path() : "") +  rest.path();
                 LOGGER.info("Binding url " +wholePath + " to " + method);
                 apiMap.put(wholePath, method);

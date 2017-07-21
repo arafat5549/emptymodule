@@ -43,7 +43,7 @@
                 <version>${spring.version}</version>
             </dependency>
 
-            <!-- Spring框架WEB部分 -->
+            <!-- Spring框架WEB部分
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-context-support</artifactId>
@@ -59,7 +59,7 @@
                 <artifactId>spring-web</artifactId>
                 <version>${spring.version}</version>
             </dependency>
-
+            -->
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>

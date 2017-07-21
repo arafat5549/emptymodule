@@ -1,10 +1,7 @@
 package com.skymoe.web;
 
-import com.skymoe.light.http.annotation.RequestBean;
 import com.skymoe.light.http.annotation.Rest;
 import com.skymoe.model.User;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -13,7 +10,7 @@ import java.util.Map;
  * Created by Administrator on 2017/7/21.
  */
 
-@Controller
+//@Controller
 @Rest
 public class TestController {
 
