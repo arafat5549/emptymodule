@@ -11,15 +11,15 @@
 
 简单说明：
 
-- <!-- 基础模块-代码自动生成和通用工具类（暂时无用）
+-  基础模块-代码自动生成和通用工具类（暂时无用）
 
-<module>empty-common</module>-->
+<module>empty-common</module>
 
-- <!-- netty轻量级HTTP服务器 -->
+- netty轻量级HTTP服务器
 
 <module>empty-lighthttp</module>
 
-- <!-- web工程 继承了empty-lighthttp模块 -->
+- web工程 继承了empty-lighthttp模块
 
 <module>empty-web</module>
 
@@ -34,7 +34,7 @@
 
 
 
-**实力Demo：**
+**例子Demo：**
 
 - 服务器启动Demo在：
 
@@ -46,7 +46,7 @@ empty-web下的 test/java/com/skymoe/web/RestController
 
 
 
-- 方法-Demo：
+- 方法片段-Demo：
 
 ```java
 //对应的URL路径:http://localhost:9090/rest/xml?method=111&name=wahaha&child=<user><id>1212</id><name>小孩子</name></user>
