@@ -1,12 +1,14 @@
 package temp;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.Files;
 import com.skymoe.light.http.annotation.Rest;
 import com.skymoe.light.http.util.scanner.PkgScanner;
 
+import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.net.URL;
+import java.util.*;
 
 /**
  * Created by Administrator on 2017/7/24.
@@ -42,24 +44,56 @@ public class BeanScannerTest {
     }
 
 
-    public static void main(String[] args)  {
-       // BeanScannerUtil.parseBeans("com.skymoe.web");
-
-        springScanner();
-
-        System.out.println("-----------------------------------");
-
+    public static List<URL> getResources(String resourceName, ClassLoader contextClassLoader) {
         try {
-            pkgScanner();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
+            Enumeration<URL> urls = contextClassLoader.getResources(resourceName);
+            ArrayList list = new ArrayList(10);
+
+            while(urls.hasMoreElements()) {
+                list.add((URL)urls.nextElement());
+            }
+
+            return list;
+        } catch (IOException var4) {
+            return new ArrayList<>();
         }
+    }
+
+    static void resScan(){
+        List<URL> list = getResources("demo.json", Thread.currentThread().getContextClassLoader());
+
+        if(list.size()>0){
+            URL url = list.get(0);
+            try {
+
+               String content =  Files.toString(new File(url.getFile()), Charsets.UTF_8);
+               System.out.println(content);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+       // System.out.println(list);
+    }
+
+
+    public static void main(String[] args)  {
+        resScan();
+
+//        springScanner();
+//
+//        System.out.println("-----------------------------------");
+//
+//        try {
+//            pkgScanner();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } catch (ClassNotFoundException e) {
+//            e.printStackTrace();
+//        } catch (IllegalAccessException e) {
+//            e.printStackTrace();
+//        } catch (InstantiationException e) {
+//            e.printStackTrace();
+//        }
 
     }
 }

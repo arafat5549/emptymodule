@@ -1,5 +1,8 @@
 package com.skymoe.light.http.util.scanner;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.Files;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -27,7 +30,7 @@ public class PkgScanner {
      * 注解的class对象
      */
     private Class anClazz;
-
+    //类加载器
     private ClassLoader cl;
 
 
@@ -222,5 +225,41 @@ public class PkgScanner {
         });
 
         return newList;
+    }
+
+
+    /**
+     *
+     */
+    public static String getResourceContent(String resourceName){
+        List<URL> list = getResources(resourceName);
+        if(list.size()>0){
+            URL url = list.get(0);
+            try {
+                String content =  Files.toString(new File(url.getFile()), Charsets.UTF_8);
+               // System.out.println(content);
+                return content;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return "";
+    }
+    public static List<URL> getResources(String resourceName) {
+        return getResources(resourceName, Thread.currentThread().getContextClassLoader());
+    }
+    public static List<URL> getResources(String resourceName, ClassLoader contextClassLoader) {
+        try {
+            Enumeration<URL> urls = contextClassLoader.getResources(resourceName);
+            ArrayList list = new ArrayList(10);
+
+            while(urls.hasMoreElements()) {
+                list.add((URL)urls.nextElement());
+            }
+
+            return list;
+        } catch (IOException var4) {
+            return new ArrayList<>();
+        }
     }
 }

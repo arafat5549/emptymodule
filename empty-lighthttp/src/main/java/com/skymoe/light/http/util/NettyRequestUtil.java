@@ -12,6 +12,9 @@ import io.netty.handler.codec.http.multipart.InterfaceHttpData;
 import io.netty.handler.codec.http.multipart.InterfaceHttpData.HttpDataType;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -38,6 +41,23 @@ public final class NettyRequestUtil {
 //		Rest rest = method.getAnnotation(Rest.class);
 //		return rest;
 //	}
+
+
+	public static String urlEncode(String part) {
+		try {
+			return URLEncoder.encode(part, "UTF-8");
+		} catch (UnsupportedEncodingException var2) {
+			return null;
+		}
+	}
+
+	public static String urlDecode(String part) {
+		try {
+			return URLDecoder.decode(part, "UTF-8");
+		} catch (UnsupportedEncodingException var2) {
+			return null;
+		}
+	}
 
 
 	/***

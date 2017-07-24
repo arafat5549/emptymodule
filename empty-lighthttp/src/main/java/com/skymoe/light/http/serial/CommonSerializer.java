@@ -26,9 +26,9 @@ public class CommonSerializer implements  IObjectSerializer{
     @Override
     public String getMediaType(SerialType type) {
         if(type == SerialType.XML){
-           return "text/xml;";
+           return type.type();//"application/xml;";
         }
-        return "text/json;";
+        return type.type();//"application/json;";
     }
     @Override
     public String serialize(Object obj, SerialType type) {

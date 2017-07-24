@@ -1,5 +1,7 @@
 package com.skymoe.light.http;
 
+import com.google.common.base.Preconditions;
+import com.skymoe.light.http.annotation.PathVariable;
 import com.skymoe.light.http.annotation.Rest;
 import com.skymoe.light.http.enums.RequestMethod;
 import com.skymoe.light.http.enums.SerialType;
@@ -7,6 +9,7 @@ import com.skymoe.light.http.exception.RestException;
 import com.skymoe.light.http.request.LightHttpRequest;
 import com.skymoe.light.http.serial.IObjectSerializer;
 import com.skymoe.light.http.util.CollUtil;
+import com.skymoe.light.http.util.NettyRequestUtil;
 import com.skymoe.light.http.util.scanner.PkgScanner;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.QueryStringDecoder;
@@ -14,15 +17,19 @@ import javassist.ClassPool;
 import javassist.CtMethod;
 import javassist.NotFoundException;
 import javassist.bytecode.LocalVariableAttribute;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Parameter;
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.sql.Time;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 处理Rest风格的请求转发类
@@ -34,27 +41,29 @@ public class RestRequestPathDispatcher<T> implements  IRequestPathDispather {
 
     private static final String CONTENT_TYPE_CHARSET_PART = " charset=UTF-8";
 
-    // Controller方法元数据，每个元素对应一个http请求
-    private Map<String, Method> apiMap;
     // Controller实例，一些单例的集合
     private Map<Class<?>, Object> beanMap;
+
+    // Controller方法元数据，每个元素对应一个http请求
+    private Map<String, Method> apiMap;
     // 各Controller 方法参数名集合
     private Map<String, String[]> paramNamesMap;
-    //
-    //spring的context用于注解的扫描(可不用)
-    //private ApplicationContext context;
+    //带PathVariable注解 方法集合,包含@PathVariable注解的方法
+    private Map<String,Map<String,Class<?>>> pathVariableMap;
     //序列化的类
     private IObjectSerializer serializer;
 
 
+    //spring的context用于注解的扫描(可不用)
+    //private ApplicationContext context;
+    //自定义包扫描类
     private PkgScanner scanner = null;
 
 
     public RestRequestPathDispatcher(IObjectSerializer serializer, PkgScanner scanner) {
         super();
-        this.serializer = serializer;
-        //this.context =context;, ApplicationContext context
-        this.scanner = scanner;
+        this.serializer = Preconditions.checkNotNull(serializer);
+        this.scanner = Preconditions.checkNotNull(scanner);
         init();
     }
 
@@ -82,12 +91,15 @@ public class RestRequestPathDispatcher<T> implements  IRequestPathDispather {
     public String dispatch(LightHttpRequest lightrequest,HttpRequest request) {
         String path = lightrequest.getPath();
 
+        //TODO
+        //直接返回后台json文件，静态文件处理
+        if(path!=null && path.endsWith(".json")){
+            String fileName = path.replaceFirst("/","");
+            System.out.println(fileName);
+            return PkgScanner.getResourceContent(fileName);
+        }
+
         if (!"/favicon.ico".equals(path)) { // 过滤静态资源，因为不需要前端页面
-            //System.out.println("path="+path);
-            //System.out.println("apiMap="+apiMap);
-            //System.out.println("beanMap="+beanMap);
-            //System.out.println("paramNamesMap="+paramNamesMap);
-           // request.getMethod().name().equals()
 
             Object obj = invoke(request);// 触发controller逻辑
 
@@ -114,6 +126,8 @@ public class RestRequestPathDispatcher<T> implements  IRequestPathDispather {
         apiMap = new HashMap<>();
         beanMap = new HashMap<>();
         paramNamesMap = new HashMap<>();
+        pathVariableMap = new HashMap<>();
+
         LOGGER.info("所有URL路径绑定如下:");
         Map<String, Object> allBeans = scanner.scanBeans();
         //this.context.getBeansWithAnnotation(Rest.class);
@@ -123,11 +137,13 @@ public class RestRequestPathDispatcher<T> implements  IRequestPathDispather {
             beanMap.put(clz, instance);
             // 解析成员方法，也就是各http api
             parseMethods(clz);
+
         }
 
         LOGGER.info("apiMap:"+apiMap);
         LOGGER.info("beanMap:"+beanMap);
         LOGGER.info("paramNamesMap:"+paramNamesMap);
+        LOGGER.info("pathVariableMap:"+pathVariableMap);
     }
 
     //解析方法
@@ -146,6 +162,8 @@ public class RestRequestPathDispatcher<T> implements  IRequestPathDispather {
                 // 解析参数名，也就是http请求所带的参数名
                 String[] paramNames = parseParamNames(method);
                 paramNamesMap.put(wholePath, paramNames);
+
+                //parsePathVariables(wholePath,method);
             }
         }
     }
@@ -175,22 +193,58 @@ public class RestRequestPathDispatcher<T> implements  IRequestPathDispather {
     }
     //
 
+    /**
+     * 解析PathVariable
+     * @param path
+     * @param method
+     */
+    private void parsePathVariables(String path,Method method){
+        String regex  = "\\{(.+?)\\}";
+        Pattern pattern = Pattern.compile(regex);// 正则表达式
+        Matcher m = pattern.matcher(path);// 操作符表达式
+        List<String> pVarNames =  new ArrayList<>();
+        while(m.find()){
+           // System.out.println(m.group(1));
+            pVarNames.add(m.group(1));
+        }
 
+        if(pVarNames.size()>0){
+            Map<String,Class<?>> pMap = new HashMap<>();
+            Parameter parameters[] = method.getParameters();
+            for (int i=0;i<parameters.length;i++)
+            {
+                Parameter parameter = parameters[i];
+                PathVariable pathVariable = parameter.getAnnotation(PathVariable.class);
+                if(pathVariable!=null && !"".equals(pathVariable.value()) && pVarNames.contains(pathVariable.value())){
+                    pMap.put(pathVariable.value(),parameter.getType());
+                }
+            }
+            pathVariableMap.put(path,pMap);
+           // System.out.println("pMap="+pMap);
+        }
+    }
+
+    private Method getPathVariableMethod(String requestUrl){
+
+        return null;
+    }
 
     // 这个就是Handler调用的入口，也就是将HttpRequest映射到对应的方法并映射各参数</span>
     public Object invoke(HttpRequest request) throws RestException {
+
 
         String uri = request.getUri();
         int index = uri.indexOf('?');
         // 获取请求路径，映射到Controller的方法
         String path = index >= 0 ? uri.substring(0, index) : uri;
+        path = NettyRequestUtil.urlDecode(path);
         Method method = apiMap.get(path);
 
         if (method == null) {  // 没有注册该方法，直接抛异常
             throw new RestException("No method binded for request " + path);
         }
-        try {
 
+        try {
             //1.检测动作是否匹配
             boolean flag = false;
             Rest rest = method.getAnnotation(Rest.class);
@@ -209,6 +263,7 @@ public class RestRequestPathDispatcher<T> implements  IRequestPathDispather {
             Object[] args = new Object[argClzs.length]; // 这里放实际的参数值
             String[] paramNames = paramNamesMap.get(path); // 参数名
 
+            Parameter parameters[] = method.getParameters();
             // 这个是netty封装的url参数解析工具，当然也可以自己split(",")
             Map<String, List<String>> requestParams = new QueryStringDecoder(uri).parameters();
 
@@ -217,7 +272,27 @@ public class RestRequestPathDispatcher<T> implements  IRequestPathDispather {
                 Class<?> argClz = argClzs[i];
                 String paramName = paramNames[i];
 
-               //System.out.println(paramName+"-------------------------"+requestParams.get(paramName)+","+requestParams);
+//                //参数URL 路径解析
+//                Parameter parameter = parameters[i];
+//                PathVariable pathVariable = parameter.getAnnotation(PathVariable.class);
+//                if(pathVariable!=null)
+//                {
+//                    String vName = pathVariable.value();
+//                    LOGGER.info(pathVariable+","+paramName);
+//                    if (argClz == HttpRequest.class) {
+//                        args[i] = request;
+//                    } else if (argClz == long.class || argClz == Long.class) {
+//                        args[i] = Long.valueOf(vName);
+//                    } else if (argClz == int.class || argClz == Integer.class) {
+//                        args[i] = Integer.valueOf(vName);
+//                    } else if (argClz == boolean.class || argClz == Boolean.class) {
+//                        args[i] = Boolean.valueOf(vName);
+//                    }
+//                    else if(argClz == double.class || argClz == Double.class){
+//                        args[i] = Double.valueOf(vName);
+//                    }
+//                }
+
 
                 if (
                         !requestParams.containsKey(paramName)
@@ -232,18 +307,6 @@ public class RestRequestPathDispatcher<T> implements  IRequestPathDispather {
                 String param = requestParams.get(paramNames[i]).get(0);
                 if (param == null) {
                     args[i] = null;
-//                    if(argClz == long.class){
-//                        args[i] = 0L;
-//                    }
-//                    else if(argClz == int.class){
-//                        args[i] = 0;
-//                    }
-//                    else if(argClz == boolean.class){
-//                        args[i] = false;
-//                    }
-//                    else if(argClz == double.class){
-//                        args[i] = 0.0d;
-//                    }
                 } else if (argClz == HttpRequest.class) {
                     args[i] = request;
                 } else if (argClz == long.class || argClz == Long.class) {
@@ -273,39 +336,48 @@ public class RestRequestPathDispatcher<T> implements  IRequestPathDispather {
             }
             // 最后反射调用方法
             Object instance = beanMap.get(method.getDeclaringClass());
-
-//            for (Object obj:args)
-//            {
-//                System.out.print("#obj="+obj+",");
-//            }
-//            System.out.println();
-//            for ( Class<?> clz:argClzs)
-//            {
-//                System.out.print("#clz="+clz+",");
-//            }
-//            System.out.println();
-
-//            Parameter params[] =  method.getParameters();
-//            for (int i=0;i<params.length;i++)
-//            {
-//                Class<?> argClz = argClzs[i];
-//                Parameter param = params[i];
-//               // System.out.println("p="+p);
-//                if (param == null) {
-//                    params[i] = null;
-//                } else if (argClz == HttpRequest.class) {
-//
-//                }
-//            }
-
             return method.invoke(instance, args);
         } catch (Exception e) {
-            //e.printStackTrace();;
             throw new RestException(e);
         }
     }
 
     public Map<String, Method> getApiMap() {
         return apiMap;
+    }
+
+
+
+    public static <T> void setValue(T t, Field f, Object value) throws IllegalAccessException {
+        // TODO 以数据库类型为准绳，还是以java数据类型为准绳？还是混合两种方式？
+        if (null == value)
+            return;
+        String v = value.toString();
+        String n = f.getType().getName();
+        if ("java.lang.Byte".equals(n) || "byte".equals(n)) {
+            f.set(t, Byte.parseByte(v));
+        } else if ("java.lang.Short".equals(n) || "short".equals(n)) {
+            f.set(t, Short.parseShort(v));
+        } else if ("java.lang.Integer".equals(n) || "int".equals(n)) {
+            f.set(t, Integer.parseInt(v));
+        } else if ("java.lang.Long".equals(n) || "long".equals(n)) {
+            f.set(t, Long.parseLong(v));
+        } else if ("java.lang.Float".equals(n) || "float".equals(n)) {
+            f.set(t, Float.parseFloat(v));
+        } else if ("java.lang.Double".equals(n) || "double".equals(n)) {
+            f.set(t, Double.parseDouble(v));
+        } else if ("java.lang.String".equals(n)) {
+            f.set(t, value.toString());
+        } else if ("java.lang.Character".equals(n) || "char".equals(n)) {
+            f.set(t, (Character) value);
+        } else if ("java.lang.Date".equals(n)) {
+            f.set(t, new Date(((java.sql.Date) value).getTime()));
+        } else if ("java.lang.Timer".equals(n)) {
+            f.set(t, new Time(((java.sql.Time) value).getTime()));
+        } else if ("java.sql.Timestamp".equals(n)) {
+            f.set(t, (java.sql.Timestamp) value);
+        } else {
+            System.out.println("SqlError：暂时不支持此数据类型，请使用其他类型代替此类型！");
+        }
     }
 }

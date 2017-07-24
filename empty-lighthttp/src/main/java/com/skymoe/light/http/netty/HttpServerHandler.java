@@ -92,6 +92,11 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
 			response = new DefaultFullHttpResponse(HTTP_1_1, OK, Unpooled.copiedBuffer(body, CharsetUtil.UTF_8));
 			response.headers().set(CONTENT_TYPE, this.pathDispather.getContentType(request));
 			response.headers().set(CONTENT_LENGTH, response.content().readableBytes());
+
+			//添加跨域支持
+			response.headers().set("Access-Control-Allow-Origin","*");
+			response.headers().set("Access-Control-Allow-Methods","POST");
+			response.headers().set("Access-Control-Allow-Headers","x-requested-with,content-type");
 		} catch (Throwable e) {
 			ExceptionLoggerContext.getExceptionLogger().log("HttpServerHandler Handler logic error.", e);
 			sendError(ctx, INTERNAL_SERVER_ERROR);

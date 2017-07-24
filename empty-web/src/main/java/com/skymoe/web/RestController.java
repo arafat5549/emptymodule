@@ -1,5 +1,6 @@
 package com.skymoe.web;
 
+import com.skymoe.light.http.annotation.PathVariable;
 import com.skymoe.light.http.annotation.Rest;
 import com.skymoe.light.http.enums.RequestMethod;
 import com.skymoe.light.http.enums.SerialType;
@@ -57,7 +58,7 @@ public class RestController {
      *  http://localhost:9090/rest/xml?method=111&child=<user><id>1212</id><name>小孩子</name></user>
      *
      *  JSON方式：
-     *  http://localhost:9090/rest/xml?method=111&child={%22id%22:12,%22name%22:%22RestControlleGET%22}
+     *  http://localhost:9090/rest/json?method=111&child={%22id%22:12,%22name%22:%22RestControlleGET%22}
      */
 
     //测试XML传输
@@ -65,18 +66,31 @@ public class RestController {
     //参数名映射注意必须使用Integer等封装类型 不然反射默认为null会报错
     @Rest(path = "/xml",method = RequestMethod.GET,serial = SerialType.XML)
     public User getUserXML(Integer method,String name,User child){
-        System.out.print("method="+method+","+"name="+name+",");
-        System.out.println("child="+child);
+        System.out.print("method="+method+","+"name="+name+","+"child="+child);
+
         User user = new User(method,name);
         user.setChild(child);
 
-        System.out.println(ChannelContext.getClientIp());
+        System.out.println(" 访问IP："+ChannelContext.getClientIp());
         return user;
     }
 
     @Rest(path = "/json",method = RequestMethod.GET)
-    public User getUserJson(Integer method){
-        User user = new User(method,"RestControlleGET");
+    public User getUserJson(Integer method,String name){
+        User user = new User(method,name);
+        
+        return user;
+    }
+
+    /***
+     * TODO 暂不支持
+     * TODO spring先在mapping里面精准匹配，匹配不到开始走@PathVariable的模糊匹配 这样路由一多 查找性能很成问题
+     * 通过URL路径传参数
+     */
+    @Rest(path = "/{id}",method = RequestMethod.GET)
+    public User pathVariable(@PathVariable("id")Integer id,String name){
+        User user = new User(id,name);
+
         return user;
     }
 
