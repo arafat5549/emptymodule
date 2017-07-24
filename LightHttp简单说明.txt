@@ -18,10 +18,10 @@ common-lang3/guava 通用的工具包
 <module>empty-web</module>
 
 基本功能：轻量级的Http入口，以便通过浏览器就能实现便捷的后台功能
-1.JSON和XML序列化传输
+1.支持JSON和XML序列化传输,支持多种序列化扩展可配置
 2.路由功能 类似于Controller
 3.可传入参数 ?method=xxxx这种方式，可接收传入的参数
-
+4.去掉spring的包扫描，自己实现包扫描功能PkgScanner
 
 示例启动在：
 empty-web下的 test/java/http/HttpTest.java
