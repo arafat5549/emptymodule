@@ -13,12 +13,12 @@
     <name>EmptyModule-lighthttp</name>
 
     <dependencies>
-
+        <!--
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
         </dependency>
-
+         -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
@@ -50,12 +50,12 @@
             <scope>provided</scope>
         </dependency>
         -->
-        <!-- 数据库连接包 -->
+        <!-- 数据库连接包
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
         </dependency>
-
+        -->
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>

@@ -1,9 +1,8 @@
 package com.skymoe.light.http.util;
 
-import com.skymoe.light.http.annotation.Rest;
-import com.skymoe.light.http.request.LightHttpRequest;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
+import com.skymoe.light.http.request.LightHttpRequest;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.QueryStringDecoder;
@@ -13,7 +12,6 @@ import io.netty.handler.codec.http.multipart.InterfaceHttpData;
 import io.netty.handler.codec.http.multipart.InterfaceHttpData.HttpDataType;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -78,8 +76,6 @@ public final class NettyRequestUtil {
 	 * 
 	 * @param data
 	 * @param request
-	 * @param isUri
-	 *            true: uri/ false: body
 	 */
 	private static void extractGetData(String data, LightHttpRequest request) {
 		QueryStringDecoder queryStringDecoder = new QueryStringDecoder(data, true);

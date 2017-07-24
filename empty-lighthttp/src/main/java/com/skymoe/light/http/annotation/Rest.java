@@ -2,7 +2,6 @@ package com.skymoe.light.http.annotation;
 
 import com.skymoe.light.http.enums.RequestMethod;
 import com.skymoe.light.http.enums.SerialType;
-import org.springframework.stereotype.Component;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -16,7 +15,7 @@ import java.lang.annotation.Target;
 
 @Target({ ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
-@Component //用于Spring扫描
+//@Component //用于Spring扫描
 public @interface Rest {
     /**
      * 请求路径

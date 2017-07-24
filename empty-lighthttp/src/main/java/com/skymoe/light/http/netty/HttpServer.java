@@ -1,9 +1,9 @@
 package com.skymoe.light.http.netty;
 
+import com.google.common.base.Preconditions;
 import com.skymoe.light.http.exception.ExceptionLogger;
 import com.skymoe.light.http.exception.ExceptionLoggerContext;
 import com.skymoe.light.http.exception.SimpleExceptionLogger;
-import com.google.common.base.Preconditions;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;

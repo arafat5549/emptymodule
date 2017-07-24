@@ -1,13 +1,13 @@
 package http;
 
 import com.skymoe.light.http.RestRequestPathDispatcher;
+import com.skymoe.light.http.annotation.Rest;
 import com.skymoe.light.http.enums.SerialType;
 import com.skymoe.light.http.netty.HttpServer;
 import com.skymoe.light.http.netty.HttpServerInitializer;
 import com.skymoe.light.http.serial.CommonSerializer;
+import com.skymoe.light.http.util.scanner.PkgScanner;
 import com.skymoe.model.User;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * 开启Http服务器
@@ -31,7 +31,9 @@ public class HttpTest {
      * @param port
      */
     static void startNettyServer(int port){
-        ApplicationContext ctx = new ClassPathXmlApplicationContext("classpath*:spring/spring-mvc.xml");
+        //ApplicationContext ctx = new ClassPathXmlApplicationContext("classpath*:spring/spring-mvc.xml");
+
+        PkgScanner ctx = new PkgScanner("com.skymoe.web", Rest.class);
         CommonSerializer serializer = new CommonSerializer();
         RestRequestPathDispatcher dispatcher = new RestRequestPathDispatcher(serializer,ctx);
         HttpServerInitializer init = new HttpServerInitializer(1,dispatcher);

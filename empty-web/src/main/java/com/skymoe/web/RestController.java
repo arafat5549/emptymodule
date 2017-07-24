@@ -5,7 +5,6 @@ import com.skymoe.light.http.enums.RequestMethod;
 import com.skymoe.light.http.enums.SerialType;
 import com.skymoe.light.http.netty.ChannelContext;
 import com.skymoe.model.User;
-import io.netty.handler.codec.http.HttpRequest;
 
 /**
  * 测试各种RestController风格的功能
@@ -74,4 +73,11 @@ public class RestController {
         System.out.println(ChannelContext.getClientIp());
         return user;
     }
+
+    @Rest(path = "/json",method = RequestMethod.GET)
+    public User getUserJson(Integer method){
+        User user = new User(method,"RestControlleGET");
+        return user;
+    }
+
 }

@@ -7,25 +7,22 @@ import com.skymoe.light.http.exception.RestException;
 import com.skymoe.light.http.request.LightHttpRequest;
 import com.skymoe.light.http.serial.IObjectSerializer;
 import com.skymoe.light.http.util.CollUtil;
+import com.skymoe.light.http.util.scanner.PkgScanner;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.QueryStringDecoder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
-
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.Parameter;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import javassist.ClassPool;
 import javassist.CtMethod;
 import javassist.NotFoundException;
 import javassist.bytecode.LocalVariableAttribute;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 处理Rest风格的请求转发类
@@ -45,15 +42,19 @@ public class RestRequestPathDispatcher<T> implements  IRequestPathDispather {
     private Map<String, String[]> paramNamesMap;
     //
     //spring的context用于注解的扫描(可不用)
-    private ApplicationContext context;
+    //private ApplicationContext context;
     //序列化的类
     private IObjectSerializer serializer;
 
 
-    public RestRequestPathDispatcher(IObjectSerializer serializer, ApplicationContext context) {
+    private PkgScanner scanner = null;
+
+
+    public RestRequestPathDispatcher(IObjectSerializer serializer, PkgScanner scanner) {
         super();
         this.serializer = serializer;
-        this.context =context;
+        //this.context =context;, ApplicationContext context
+        this.scanner = scanner;
         init();
     }
 
@@ -114,7 +115,8 @@ public class RestRequestPathDispatcher<T> implements  IRequestPathDispather {
         beanMap = new HashMap<>();
         paramNamesMap = new HashMap<>();
         LOGGER.info("所有URL路径绑定如下:");
-        Map<String, Object> allBeans = this.context.getBeansWithAnnotation(Rest.class);
+        Map<String, Object> allBeans = scanner.scanBeans();
+        //this.context.getBeansWithAnnotation(Rest.class);
         for (Object instance : allBeans.values()) {
             // 生成Controller类的实例
             Class<?> clz = instance.getClass();

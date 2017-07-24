@@ -1,10 +1,10 @@
 package com.skymoe.light.http.netty;
 
+import com.google.common.base.Stopwatch;
 import com.skymoe.light.http.IRequestPathDispather;
 import com.skymoe.light.http.exception.ExceptionLoggerContext;
 import com.skymoe.light.http.request.LightHttpRequest;
 import com.skymoe.light.http.util.NettyRequestUtil;
-import com.google.common.base.Stopwatch;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;

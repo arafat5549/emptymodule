@@ -19,3 +19,5 @@ common-lang3/guava 通用的工具包
 
 示例启动在：
 empty-web下的 test/java/http/HttpTest.java
+具体例子可以看:
+empty-web下的 test/java/com/skymoe/web/RestController

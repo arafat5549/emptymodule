@@ -1,7 +1,7 @@
 package com.skymoe.light.http.netty;
 
-import com.skymoe.light.http.IRequestPathDispather;
 import com.google.common.base.Preconditions;
+import com.skymoe.light.http.IRequestPathDispather;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.channel.socket.SocketChannel;
