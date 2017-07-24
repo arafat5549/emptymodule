@@ -5,7 +5,6 @@ maven分模块:
 netty 用于启动Http服务器
 gson  用于序列化处理
 javaassist 用于反射处理
-spring-context 用于包的扫描(可以自己编写可以省不少包 主要是spring相关)
 logj/slf4j  日记处理包
 common-lang3/guava 通用的工具包
 
