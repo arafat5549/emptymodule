@@ -22,6 +22,6 @@ public interface IRequestPathDispather {
 	 * 
 	 * @return
 	 */
-	public String getContentType();
+	public String getContentType(HttpRequest request);
 
 }

@@ -15,6 +15,9 @@ import org.springframework.context.ApplicationContext;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Parameter;
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,8 +44,6 @@ public class RestRequestPathDispatcher<T> implements  IRequestPathDispather {
     // 各Controller 方法参数名集合
     private Map<String, String[]> paramNamesMap;
     //
-
-
     //spring的context用于注解的扫描(可不用)
     private ApplicationContext context;
     //序列化的类
@@ -53,11 +54,23 @@ public class RestRequestPathDispatcher<T> implements  IRequestPathDispather {
         super();
         this.serializer = serializer;
         this.context =context;
-
         init();
     }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RestRequestPathDispatcher.class);
+
+    //通过request获取Rest
+    private Rest parseRest(HttpRequest request){
+        String uri = request.getUri();
+        int index = uri.indexOf('?');
+        String urlpath = index >= 0 ? uri.substring(0, index) : uri;
+        Method method = apiMap.get(urlpath);
+        Rest rest = null;
+        if(method!=null)
+            rest = method.getAnnotation(Rest.class);
+        return rest;
+    }
+
 
     /**
      * 请求转发方法
@@ -77,20 +90,19 @@ public class RestRequestPathDispatcher<T> implements  IRequestPathDispather {
 
             Object obj = invoke(request);// 触发controller逻辑
 
-            String uri = request.getUri();
-            int index = uri.indexOf('?');
-            String urlpath = index >= 0 ? uri.substring(0, index) : uri;
-            Method method = apiMap.get(urlpath);
-            Rest rest = method.getAnnotation(Rest.class);
-            return this.serializer.serial(obj,rest.serial()); //返回JSON字符串
+            Rest rest = parseRest(request);
+            SerialType type = rest!=null ? rest.serial() : SerialType.JSON;
+            return this.serializer.serialize(obj,type);
         }
         return null;
     }
 
     @Override
-    public String getContentType()
+    public String getContentType(HttpRequest request)
     {
-        return this.serializer.getMediaType() + CONTENT_TYPE_CHARSET_PART;
+        Rest rest = parseRest(request);
+        SerialType type = rest!=null ? rest.serial() : SerialType.JSON;
+        return this.serializer.getMediaType(type) + CONTENT_TYPE_CHARSET_PART;
     }
     /**
      * 私有类区域
@@ -103,7 +115,6 @@ public class RestRequestPathDispatcher<T> implements  IRequestPathDispather {
         paramNamesMap = new HashMap<>();
         LOGGER.info("所有URL路径绑定如下:");
         Map<String, Object> allBeans = this.context.getBeansWithAnnotation(Rest.class);
-       // LOGGER.info("allBeans="+allBeans);
         for (Object instance : allBeans.values()) {
             // 生成Controller类的实例
             Class<?> clz = instance.getClass();
@@ -121,7 +132,6 @@ public class RestRequestPathDispatcher<T> implements  IRequestPathDispather {
     private void parseMethods(Class<?> clz){
         //定义在类上的注解
         Rest restClz = clz.getAnnotation(Rest.class);
-        //System.out.println("restClz="+restClz.path());
 
         for (Method method : clz.getDeclaredMethods()) {
             Rest rest = method.getAnnotation(Rest.class);
@@ -137,8 +147,11 @@ public class RestRequestPathDispatcher<T> implements  IRequestPathDispather {
             }
         }
     }
-    //解析参数
-    // 这个方法要解析某个方法所有参数的声明名称，这里需要用到javassist的高级反射特性（普通的反射机制是拿不到方法参数声明名称的，只能拿到类型）
+    /**
+     * 解析参数
+     *
+     * 这个方法要解析某个方法所有参数的声明名称，这里需要用到javassist的高级反射特性（普通的反射机制是拿不到方法参数声明名称的，只能拿到类型）
+     */
     private String[] parseParamNames(Method method){
         try {
             CtMethod cm = ClassPool.getDefault().get(method.getDeclaringClass().getName())
@@ -169,7 +182,6 @@ public class RestRequestPathDispatcher<T> implements  IRequestPathDispather {
         int index = uri.indexOf('?');
         // 获取请求路径，映射到Controller的方法
         String path = index >= 0 ? uri.substring(0, index) : uri;
-
         Method method = apiMap.get(path);
 
         if (method == null) {  // 没有注册该方法，直接抛异常
@@ -180,6 +192,7 @@ public class RestRequestPathDispatcher<T> implements  IRequestPathDispather {
             //1.检测动作是否匹配
             boolean flag = false;
             Rest rest = method.getAnnotation(Rest.class);
+            SerialType type = rest!=null ? rest.serial() : SerialType.JSON;
             for (RequestMethod rm : rest.method()){
                 if( request.getMethod().name().equals(rm.type())){
                     flag = true;
@@ -190,22 +203,24 @@ public class RestRequestPathDispatcher<T> implements  IRequestPathDispather {
                 return path+",无匹配参数类型:"+request.getMethod().name();
             }
             //2.
-
-
             Class<?>[] argClzs = method.getParameterTypes(); // 参数类型
             Object[] args = new Object[argClzs.length]; // 这里放实际的参数值
             String[] paramNames = paramNamesMap.get(path); // 参数名
+
             // 这个是netty封装的url参数解析工具，当然也可以自己split(",")
             Map<String, List<String>> requestParams = new QueryStringDecoder(uri).parameters();
+
             // 逐个把请求参数解析成对应方法参数的类型
             for (int i = 0; i < argClzs.length; i++) {
                 Class<?> argClz = argClzs[i];
                 String paramName = paramNames[i];
 
-                System.out.println(paramName+"-------------------------"+requestParams.get(paramName));
+               //System.out.println(paramName+"-------------------------"+requestParams.get(paramName)+","+requestParams);
 
-                if (!requestParams.containsKey(paramName)
-                        || CollUtil.isEmpty(requestParams.get(paramName))  ) {
+                if (
+                        !requestParams.containsKey(paramName)
+                        || CollUtil.isEmpty(requestParams.get(paramName))
+                   ) {
                     // 没有找到对应参数，则默认取null。愿意的话也可以定义类似@Required或者@DefaultValue之类的注解来设置自定义默认值
                     args[i] = null;
                     continue;
@@ -215,6 +230,18 @@ public class RestRequestPathDispatcher<T> implements  IRequestPathDispather {
                 String param = requestParams.get(paramNames[i]).get(0);
                 if (param == null) {
                     args[i] = null;
+//                    if(argClz == long.class){
+//                        args[i] = 0L;
+//                    }
+//                    else if(argClz == int.class){
+//                        args[i] = 0;
+//                    }
+//                    else if(argClz == boolean.class){
+//                        args[i] = false;
+//                    }
+//                    else if(argClz == double.class){
+//                        args[i] = 0.0d;
+//                    }
                 } else if (argClz == HttpRequest.class) {
                     args[i] = request;
                 } else if (argClz == long.class || argClz == Long.class) {
@@ -223,12 +250,20 @@ public class RestRequestPathDispatcher<T> implements  IRequestPathDispather {
                     args[i] = Integer.valueOf(param);
                 } else if (argClz == boolean.class || argClz == Boolean.class) {
                     args[i] = Boolean.valueOf(param);
-                } else if (argClz == String.class) {
+                }
+                else if(argClz == double.class || argClz == Double.class){
+                    args[i] = Double.valueOf(param);
+                }
+                else if(argClz == BigDecimal.class){
+                    args[i] = new BigDecimal(param);
+                }
+                else if (argClz == String.class) {
                     args[i] = param;
                 } else {
                     // 复合类型的话，默认按照Json方式解析。不过这种场景一般也不需要特别复杂的参数
                     try {
-                        args[i] = serializer.fromJson(param,argClz);//JsonMapper.INSTANCE.fromJson(param,argClz);
+                       // System.out.println("#param="+param+",argClz="+argClz+",user="+serializer.fromJson(param,argClz));
+                        args[i] = serializer.deserialize(param,argClz,type);
                     } catch (Exception e) {
                         args[i] = null;
                     }
@@ -236,8 +271,34 @@ public class RestRequestPathDispatcher<T> implements  IRequestPathDispather {
             }
             // 最后反射调用方法
             Object instance = beanMap.get(method.getDeclaringClass());
+
+//            for (Object obj:args)
+//            {
+//                System.out.print("#obj="+obj+",");
+//            }
+//            System.out.println();
+//            for ( Class<?> clz:argClzs)
+//            {
+//                System.out.print("#clz="+clz+",");
+//            }
+//            System.out.println();
+
+//            Parameter params[] =  method.getParameters();
+//            for (int i=0;i<params.length;i++)
+//            {
+//                Class<?> argClz = argClzs[i];
+//                Parameter param = params[i];
+//               // System.out.println("p="+p);
+//                if (param == null) {
+//                    params[i] = null;
+//                } else if (argClz == HttpRequest.class) {
+//
+//                }
+//            }
+
             return method.invoke(instance, args);
         } catch (Exception e) {
+            //e.printStackTrace();;
             throw new RestException(e);
         }
     }

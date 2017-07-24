@@ -4,7 +4,7 @@ import com.skymoe.light.http.RestRequestPathDispatcher;
 import com.skymoe.light.http.enums.SerialType;
 import com.skymoe.light.http.netty.HttpServer;
 import com.skymoe.light.http.netty.HttpServerInitializer;
-import com.skymoe.light.http.serial.GsonObjectSerializer;
+import com.skymoe.light.http.serial.CommonSerializer;
 import com.skymoe.model.User;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -18,9 +18,9 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public class HttpTest {
 
     public static void jsonTest() {
-        GsonObjectSerializer serial = new GsonObjectSerializer();
+        CommonSerializer serial = new CommonSerializer();
         User user = new User(1,"wang");
-        String str = serial.serial(user, SerialType.XML);
+        String str = serial.serialize(user, SerialType.XML);
         System.out.println(str);
     }
 
@@ -32,8 +32,7 @@ public class HttpTest {
      */
     static void startNettyServer(int port){
         ApplicationContext ctx = new ClassPathXmlApplicationContext("classpath*:spring/spring-mvc.xml");
-        GsonObjectSerializer serializer = new GsonObjectSerializer();
-        //SimpleRequestPathDispatcher dispatcher = new SimpleRequestPathDispatcher(serializer,ctx);
+        CommonSerializer serializer = new CommonSerializer();
         RestRequestPathDispatcher dispatcher = new RestRequestPathDispatcher(serializer,ctx);
         HttpServerInitializer init = new HttpServerInitializer(1,dispatcher);
         HttpServer server = new HttpServer(init,port);
@@ -46,8 +45,8 @@ public class HttpTest {
 
 
     public static void main(String[] args) {
-        jsonTest();
+        //jsonTest();
 
-        //startNettyServer(9090);
+        startNettyServer(9090);
     }
 }

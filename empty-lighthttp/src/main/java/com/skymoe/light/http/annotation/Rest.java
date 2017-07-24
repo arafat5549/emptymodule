@@ -26,8 +26,9 @@ public @interface Rest {
     String path() default "";
     /**
      * Rest动作 即GET方法/POST方法 ,只对在方法上的注解奇效
+     * 默认为GET方法
      */
-    RequestMethod[] method() default {};
+    RequestMethod[] method() default {RequestMethod.GET};
     /**
      * 输出类型#默认为JSON类型,   只对在方法上的注解奇效
      */

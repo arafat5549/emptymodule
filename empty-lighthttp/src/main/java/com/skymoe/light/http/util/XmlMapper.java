@@ -18,7 +18,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
- * Created by Administrator on 2017/7/21.
+ * XML序列化工具
+ *
+ * 这种序列化需要在要序列化的Bean对象实体上添加@XmlRootElement注解
  */
 public class XmlMapper {
 

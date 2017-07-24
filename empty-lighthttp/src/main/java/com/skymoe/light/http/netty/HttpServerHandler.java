@@ -90,10 +90,10 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
 			String body = executeQuery(request) + System.lineSeparator();
 
 			response = new DefaultFullHttpResponse(HTTP_1_1, OK, Unpooled.copiedBuffer(body, CharsetUtil.UTF_8));
-			response.headers().set(CONTENT_TYPE, this.pathDispather.getContentType());
+			response.headers().set(CONTENT_TYPE, this.pathDispather.getContentType(request));
 			response.headers().set(CONTENT_LENGTH, response.content().readableBytes());
 		} catch (Throwable e) {
-			ExceptionLoggerContext.getExceptionLogger().log("Handler logic error.", e);
+			ExceptionLoggerContext.getExceptionLogger().log("HttpServerHandler Handler logic error.", e);
 			sendError(ctx, INTERNAL_SERVER_ERROR);
 			return;
 		}

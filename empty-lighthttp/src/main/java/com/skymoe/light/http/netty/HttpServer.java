@@ -17,6 +17,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Http服务启动器
+ * BossEventLoopGroup加工人EventLoopGroup方式
+ *
  * 用法例子：
  *
 	 ApplicationContext ctx = new ClassPathXmlApplicationContext("classpath*:spring/spring-mvc.xml");

@@ -1,5 +1,6 @@
 package com.skymoe.light.http.util;
 
+import com.skymoe.light.http.annotation.Rest;
 import com.skymoe.light.http.request.LightHttpRequest;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
@@ -12,6 +13,7 @@ import io.netty.handler.codec.http.multipart.InterfaceHttpData;
 import io.netty.handler.codec.http.multipart.InterfaceHttpData.HttpDataType;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -25,6 +27,26 @@ public final class NettyRequestUtil {
 	private static final String URL_PATTERN = "https?:\\/\\/[^/]+";
 	private static final String HTTP = "http";
 
+//	/**
+//	 *
+//	 * @param request
+//	 * @return
+//	 */
+//	public staic Rest test(){
+//		String uri = request.getUri();
+//		int index = uri.indexOf('?');
+//		String urlpath = index >= 0 ? uri.substring(0, index) : uri;
+//		Method method = apiMap.get(urlpath);
+//		Rest rest = method.getAnnotation(Rest.class);
+//		return rest;
+//	}
+
+
+	/***
+	 * 将NettyRequest转化为LightRequest
+	 * @param request
+	 * @return
+	 */
 	public static LightHttpRequest toLightRequest(HttpRequest request) {
 		LightHttpRequest lightRequest = new LightHttpRequest();
 		extractGetData(request.getUri(), lightRequest);

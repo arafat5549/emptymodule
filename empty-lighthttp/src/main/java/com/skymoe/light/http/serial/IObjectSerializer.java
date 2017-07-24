@@ -10,23 +10,23 @@ import com.skymoe.light.http.enums.SerialType;
 public interface IObjectSerializer {
 
 	/**
+	 * 序列化的Media-Type；输出的格式类型
+	 * @param type 序列化类型
+	 * @return
+	 */
+	String getMediaType(SerialType type);
+
+	/**
 	 * 序列化对象
-	 * 
+	 *
 	 * @param obj
 	 * @return
 	 */
-	String serial(Object obj, SerialType type);
-
+	String serialize(Object obj, SerialType type);
 	/**
-	 * 序列化的Media-Type
-	 * 
+	 * 反序列化
+	 * @param content
 	 * @return
 	 */
-	String getMediaType();
-	/**
-	 * JSON数据
-	 * @param json
-	 * @return
-	 */
-	Object fromJson(String json,Class<?> clz);
+	Object deserialize(String content,Class<?> clz,SerialType type);
 }

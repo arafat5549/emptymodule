@@ -16,6 +16,15 @@ public class User {
 
     private Integer id;
     private String name;
+    private User child;
+
+    public User getChild() {
+        return child;
+    }
+
+    public void setChild(User child) {
+        this.child = child;
+    }
 
     public Integer getId() {
         return id;
