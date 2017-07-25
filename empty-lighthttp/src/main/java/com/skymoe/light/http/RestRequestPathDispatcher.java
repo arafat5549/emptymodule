@@ -1,5 +1,6 @@
 package com.skymoe.light.http;
 
+import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
 import com.skymoe.light.http.annotation.PathVariable;
 import com.skymoe.light.http.annotation.Rest;
@@ -11,8 +12,9 @@ import com.skymoe.light.http.serial.IObjectSerializer;
 import com.skymoe.light.http.util.CollUtil;
 import com.skymoe.light.http.util.NettyRequestUtil;
 import com.skymoe.light.http.util.scanner.PkgScanner;
-import io.netty.handler.codec.http.HttpRequest;
-import io.netty.handler.codec.http.QueryStringDecoder;
+import io.netty.buffer.ByteBuf;
+import io.netty.handler.codec.http.*;
+import io.netty.util.collection.IntObjectMap;
 import javassist.ClassPool;
 import javassist.CtMethod;
 import javassist.NotFoundException;
@@ -236,6 +238,30 @@ public class RestRequestPathDispatcher<T> implements  IRequestPathDispather {
         return null;
     }
 
+
+    private String getParamerByNameFromPOST(String name, String body) {
+        QueryStringDecoder decoderQuery = new QueryStringDecoder("some?" + body);
+        return getParameterByName(name, decoderQuery);
+    }
+    /**
+     * 根据传入参数的key获取value
+     * @param name
+     * @param decoderQuery
+     * @return
+     */
+    private String getParameterByName(String name, QueryStringDecoder decoderQuery) {
+        Map<String, List<String>> uriAttributes = decoderQuery.parameters();
+        for (Map.Entry<String, List<String>> attr : uriAttributes.entrySet()) {
+            String key = attr.getKey();
+            for (String attrVal : attr.getValue()) {
+                if (key.equals(name)) {
+                    return attrVal;
+                }
+            }
+        }
+        return null;
+    }
+
     // 这个就是Handler调用的入口，也就是将HttpRequest映射到对应的方法并映射各参数</span>
     public Object invoke(HttpRequest request) throws RestException {
 
@@ -251,6 +277,15 @@ public class RestRequestPathDispatcher<T> implements  IRequestPathDispather {
             throw new RestException("No method binded for request " + path);
         }
 
+//        HttpHeaders headers = request.headers();
+//        for(Map.Entry<String, String> entry : headers.entries()){
+//            System.out.println(entry);
+//        }
+
+        // String l = getParamerByNameFromPOST( "key", bodyString);
+       // System.out.println( "参数:"+l);
+
+        //request.getDecoderResult()
         try {
             //1.检测动作是否匹配
             boolean flag = false;
@@ -273,6 +308,8 @@ public class RestRequestPathDispatcher<T> implements  IRequestPathDispather {
             Parameter parameters[] = method.getParameters();
             // 这个是netty封装的url参数解析工具，当然也可以自己split(",")
             Map<String, List<String>> requestParams = new QueryStringDecoder(uri).parameters();
+
+            System.out.println("requestParams="+requestParams);
 
             // 逐个把请求参数解析成对应方法参数的类型
             for (int i = 0; i < argClzs.length; i++) {
@@ -316,6 +353,7 @@ public class RestRequestPathDispatcher<T> implements  IRequestPathDispather {
                     args[i] = null;
                 } else if (argClz == HttpRequest.class) {
                     args[i] = request;
+
                 } else if (argClz == long.class || argClz == Long.class) {
                     args[i] = Long.valueOf(param);
                 } else if (argClz == int.class || argClz == Integer.class) {
@@ -341,6 +379,29 @@ public class RestRequestPathDispatcher<T> implements  IRequestPathDispather {
                     }
                 }
             }
+            //获取HTTP 正文体  # POST方法
+            if(request.getMethod().equals(HttpMethod.POST)){
+                FullHttpRequest fhr = (FullHttpRequest)request;
+                ByteBuf buf = fhr.content();
+                String bodyString = buf.toString(Charsets.UTF_8);
+                //String bodyContent = getParamerByNameFromPOST("body",bodyString);
+                for (int i = 0; i < argClzs.length; i++) {
+                    Class<?> argClz = argClzs[i];
+                    if( args[i] ==null)
+                    {
+                        try {
+                            args[i] = serializer.deserialize(bodyString,argClz,type);
+                            System.out.println(args[i]);
+                            break;
+                        } catch (Exception e) {
+                            args[i] = null;
+                        }
+                    }
+                }
+            }
+
+            //System.out.println( "body: " + bodyString);
+
             // 最后反射调用方法
             Object instance = beanMap.get(method.getDeclaringClass());
             return method.invoke(instance, args);

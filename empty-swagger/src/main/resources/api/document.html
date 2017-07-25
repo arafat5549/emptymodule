@@ -2,11 +2,32 @@
 <html>
 <title>API 文档</title>
 
+<style type="text/css">
+    h3 span.http_method {
+        text-transform: uppercase;
+        text-decoration: none;
+        color: white;
+        display: inline-block;
+        width: 70px;
+        font-size: 0.7em;
+        text-align: center;
+        padding: 7px 0 4px;
+        -moz-border-radius: 2px;
+        -webkit-border-radius: 2px;
+        -o-border-radius: 2px;
+        -ms-border-radius: 2px;
+        -khtml-border-radius: 2px;
+        border-radius: 2px;
+    }
+
+
+</style>
+
 <xmp theme="united" style="display:none;">
 #天萌RESTFUL API接口说明
 
 
-## HTTP | HTTPS://localhost:9090/api
+## HTTP | HTTPS://localhost:9090/
 
 
 天萌RESTFUL API接口说明
@@ -106,24 +127,22 @@
 # APIs
 
 
-## /pet/{petId}
-
-
-### GET
-
-<a id="getPetById">根据ID获取宠物对象</a>
-
-Returns a pet when ID &lt; 10.  ID &gt; 10 or nonintegers will simulate API error conditions
+## /pet
 
 
 
 
-#### Security
+
+### <span class="http_method"  style="background-color: #c5862b">PUT</span>
+
+<a id="updatePet">更新已经存在的宠物信息</a>
 
 
 
 
-* api_key
+
+
+#### <span class="http_title"  style="background-color: #e5e0c6">Security</span>
 
 
 
@@ -135,11 +154,171 @@ Returns a pet when ID &lt; 10.  ID &gt; 10 or nonintegers will simulate API erro
 
 
 
-#### Request请求数据
+#### <span class="http_title"  style="background-color: #e5e0c6">Request请求数据</span>
+
+
+**Content-Type: ** application/json, application/xml
+
+##### <span class="http_title"  style="background-color: #e5e0c6">Parameters参数信息</span>
+
+<table border="1">
+    <tr>
+        <th>名称</th>
+        <th>位于</th>
+        <th>必填</th>
+        <th>描述</th>
+        <th>默认值</th>
+        <th>文件结构</th>
+    </tr>
 
 
 
-##### Parameters参数信息
+<tr>
+    <th>body</th>
+    <td>body</td>
+    <td>是</td>
+    <td>要更新的宠物对象</td>
+    <td> - </td>
+
+    <td>
+    
+    <a href="#/definitions/Pet(宠物)">Pet(宠物)</a> 
+    </td>
+
+</tr>
+
+
+</table>
+
+
+
+#### <span class="http_title"  style="background-color: #e5e0c6">Response响应结果</span>
+
+**Content-Type: ** application/xml, application/json
+
+
+|    返回码   | 原因        | 响应Model对象  |
+|-------------|-------------|----------------|
+| 400    | 无效的ID |  - |
+| 404    | 未找到指定ID的宠物 |  - |
+| 405    | 405验证错误 |  - |
+
+
+
+
+
+### <span class="http_method"  style="background-color: #10a54a">POST</span>
+
+<a id="addPet">添加一只宠物到宠物商店</a>
+
+
+
+
+
+
+#### <span class="http_title"  style="background-color: #e5e0c6">Security</span>
+
+
+
+
+* petstore_auth
+   * write:pets
+   * read:pets
+
+
+
+
+#### <span class="http_title"  style="background-color: #e5e0c6">Request请求数据</span>
+
+
+**Content-Type: ** application/json, application/xml
+
+##### <span class="http_title"  style="background-color: #e5e0c6">Parameters参数信息</span>
+
+<table border="1">
+    <tr>
+        <th>名称</th>
+        <th>位于</th>
+        <th>必填</th>
+        <th>描述</th>
+        <th>默认值</th>
+        <th>文件结构</th>
+    </tr>
+
+
+
+<tr>
+    <th>body</th>
+    <td>body</td>
+    <td>是</td>
+    <td>要添加的宠物对象</td>
+    <td> - </td>
+
+    <td>
+    
+    <a href="#/definitions/Pet(宠物)">Pet(宠物)</a> 
+    </td>
+
+</tr>
+
+
+</table>
+
+
+
+#### <span class="http_title"  style="background-color: #e5e0c6">Response响应结果</span>
+
+**Content-Type: ** application/xml, application/json
+
+
+|    返回码   | 原因        | 响应Model对象  |
+|-------------|-------------|----------------|
+| 405    | 无效输入 |  - |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## /pet/{petId}
+
+
+
+### <span class="http_method" style="background-color: #0f6ab4;">GET</span>
+
+<a id="getPetById">根据ID获取宠物对象</a>
+
+ID有效范围为[1,10],并且必须为整形数值
+
+
+
+
+#### <span class="http_title"  style="background-color: #e5e0c6">Security</span>
+
+
+
+
+* petstore_auth
+   * write:pets
+   * read:pets
+
+
+
+
+#### <span class="http_title"  style="background-color: #e5e0c6">Request请求数据</span>
+
+
+
+##### <span class="http_title"  style="background-color: #e5e0c6">Parameters参数信息</span>
 
 <table border="1">
     <tr>
@@ -157,7 +336,7 @@ Returns a pet when ID &lt; 10.  ID &gt; 10 or nonintegers will simulate API erro
     <th>petId</th>
     <td>path</td>
     <td>是</td>
-    <td>ID of pet that needs to be fetched</td>
+    <td>你要获取的宠物的ID</td>
     <td> - </td>
 
     
@@ -171,7 +350,7 @@ Returns a pet when ID &lt; 10.  ID &gt; 10 or nonintegers will simulate API erro
 
 
 
-#### Response响应结果
+#### <span class="http_title"  style="background-color: #e5e0c6">Response响应结果</span>
 
 **Content-Type: ** application/xml, application/json
 
@@ -187,6 +366,87 @@ Returns a pet when ID &lt; 10.  ID &gt; 10 or nonintegers will simulate API erro
 
 
 
+
+
+
+### <span class="http_method"  style="background-color: #a41e22">DELETE</span>
+
+<a id="deletePet">根据ID删除宠物对象</a>
+
+
+
+
+
+
+#### <span class="http_title"  style="background-color: #e5e0c6">Security</span>
+
+
+
+
+* petstore_auth
+   * write:pets
+   * read:pets
+
+
+
+
+#### <span class="http_title"  style="background-color: #e5e0c6">Request请求数据</span>
+
+
+
+##### <span class="http_title"  style="background-color: #e5e0c6">Parameters参数信息</span>
+
+<table border="1">
+    <tr>
+        <th>名称</th>
+        <th>位于</th>
+        <th>必填</th>
+        <th>描述</th>
+        <th>默认值</th>
+        <th>文件结构</th>
+    </tr>
+
+
+
+<tr>
+    <th>api_key</th>
+    <td>header</td>
+    <td>否</td>
+    <td></td>
+    <td> - </td>
+
+    
+            <td>string </td>
+    
+
+</tr>
+
+<tr>
+    <th>petId</th>
+    <td>path</td>
+    <td>是</td>
+    <td>要删除的宠物ID</td>
+    <td> - </td>
+
+    
+            <td>integer (int64)</td>
+    
+
+</tr>
+
+
+</table>
+
+
+
+#### <span class="http_title"  style="background-color: #e5e0c6">Response响应结果</span>
+
+**Content-Type: ** application/xml, application/json
+
+
+|    返回码   | 原因        | 响应Model对象  |
+|-------------|-------------|----------------|
+| 400    | 无效的ID |  - |
 
 
 

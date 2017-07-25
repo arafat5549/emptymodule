@@ -25,7 +25,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.List;
 
-@XmlRootElement(name = "Pet")
+@XmlRootElement//(name = "Pet")
 @ApiModel(value = "Pet(宠物)")
 public class Pet {
   private long id;
@@ -35,7 +35,7 @@ public class Pet {
   private List<Tag> tags = new ArrayList<Tag>();
   private String status;
 
-  @XmlElement(name = "id")
+ // @XmlElement(name = "id")
   public long getId() {
     return id;
   }
@@ -44,7 +44,7 @@ public class Pet {
     this.id = id;
   }
 
-  @XmlElement(name = "category")
+  //@XmlElement(name = "category")
   public Category getCategory() {
     return category;
   }
@@ -53,7 +53,7 @@ public class Pet {
     this.category = category;
   }
 
-  @XmlElement(name = "name")
+  //@XmlElement(name = "name")
   @ApiModelProperty(example = "doggie", required = true)
   public String getName() {
     return name;
@@ -83,7 +83,7 @@ public class Pet {
     this.tags = tags;
   }
 
-  @XmlElement(name = "status")
+  //@XmlElement(name = "status")
   @ApiModelProperty(value = "pet status in the store", allowableValues = "available,pending,sold")
   public String getStatus() {
     return status;
@@ -92,4 +92,16 @@ public class Pet {
   public void setStatus(String status) {
     this.status = status;
   }
+
+    @Override
+    public String toString() {
+        return "Pet{" +
+                "id=" + id +
+                ", category=" + category +
+                ", name='" + name + '\'' +
+                ", photoUrls=" + photoUrls +
+                ", tags=" + tags +
+                ", status='" + status + '\'' +
+                '}';
+    }
 }

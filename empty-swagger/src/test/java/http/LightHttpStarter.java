@@ -7,6 +7,8 @@ import com.skymoe.light.http.netty.HttpServer;
 import com.skymoe.light.http.netty.HttpServerInitializer;
 import com.skymoe.light.http.serial.CommonSerializer;
 import com.skymoe.light.http.util.scanner.PkgScanner;
+import com.skymoe.swagger.data.PetData;
+import com.skymoe.swagger.model.Pet;
 
 /**
  * 开启Http服务器
@@ -17,10 +19,14 @@ import com.skymoe.light.http.util.scanner.PkgScanner;
 public class LightHttpStarter {
 
     public static void jsonTest() {
-        //CommonSerializer serial = new CommonSerializer();
-        //User user = new User(1,"wang");
-        //String str = serial.serialize(user, SerialType.XML);
-        //System.out.println(str);
+        PetData pdata = new PetData();
+        CommonSerializer serial = new CommonSerializer();
+        Pet pet = pdata.getPetbyId(1);
+        String xmlstr = serial.serialize(pet, SerialType.XML);
+        System.out.println(xmlstr);
+
+        String str = serial.serialize(pet, SerialType.JSON);
+        System.out.println(str);
     }
 
     /**
@@ -32,7 +38,9 @@ public class LightHttpStarter {
     static void startNettyServer(int port){
         //ApplicationContext ctx = new ClassPathXmlApplicationContext("classpath*:spring/spring-mvc.xml");
 
-        PkgScanner ctx = new PkgScanner("com.skymoe.web", Rest.class);
+        String scanPath = "com.skymoe.web";//"com.skymoe.swagger.resource";
+        //"com.skymoe.web"
+        PkgScanner ctx = new PkgScanner(scanPath, Rest.class);
         CommonSerializer serializer = new CommonSerializer();
         RestRequestPathDispatcher dispatcher = new RestRequestPathDispatcher(serializer,ctx);
         HttpServerInitializer init = new HttpServerInitializer(1,dispatcher);
@@ -46,7 +54,7 @@ public class LightHttpStarter {
 
 
     public static void main(String[] args) {
-        //jsonTest();
+       // jsonTest();
 
         startNettyServer(9090);
     }

@@ -3,6 +3,7 @@ package com.skymoe.light.http.serial;
 import com.google.gson.Gson;
 import com.skymoe.light.http.enums.SerialType;
 import com.skymoe.light.http.util.GsonBuilderProxy;
+import com.skymoe.light.http.util.JsonMapper;
 import com.skymoe.light.http.util.XmlMapper;
 
 /**
@@ -17,7 +18,6 @@ public class CommonSerializer implements  IObjectSerializer{
     private Gson gson;
 
     public CommonSerializer() {
-
         this.gson = new GsonBuilderProxy().create();
     }
 
@@ -35,13 +35,13 @@ public class CommonSerializer implements  IObjectSerializer{
         if(type == SerialType.XML){
             return XmlMapper.toXml(obj);
         }
-        return gson.toJson(obj);
+        return JsonMapper.INSTANCE.toJson(obj);//gson.toJson(obj);
     }
     @Override
     public Object deserialize(String content, Class<?> clz,SerialType type) {
         if(type == SerialType.XML){
             return XmlMapper.fromXml(content,clz);
         }
-        return this.gson.fromJson(content,clz);
+        return JsonMapper.INSTANCE.fromJson(content,clz);//this.gson.fromJson(content,clz);
     }
 }

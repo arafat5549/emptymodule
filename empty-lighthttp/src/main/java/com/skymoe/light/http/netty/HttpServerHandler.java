@@ -60,6 +60,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
 			return;
 		}
 
+
 		//System.out.println("--------channelRead0------");
 		writeResponse(request, ctx);
 	}

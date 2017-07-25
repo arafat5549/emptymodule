@@ -4,7 +4,7 @@ package com.skymoe.swagger.model;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "Category")
+@XmlRootElement//(name = "Category")
 public class Category {
   private long id;
   private String name;
@@ -25,5 +25,13 @@ public class Category {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  @Override
+  public String toString() {
+    return "Category{" +
+            "id=" + id +
+            ", name='" + name + '\'' +
+            '}';
   }
 }

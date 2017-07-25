@@ -27,6 +27,8 @@
             <version>${project.version}</version>
         </dependency>
 
+
+
         <dependency>
             <groupId>io.swagger</groupId>
             <artifactId>swagger-core</artifactId>
@@ -35,6 +37,29 @@
                 <exclusion>
                     <groupId>javax.ws.rs</groupId>
                     <artifactId>jsr311-api</artifactId>
+                </exclusion>
+
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-annotations</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-databind</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-core</artifactId>
+                </exclusion>
+
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.dataformat</groupId>
+                    <artifactId>jackson-dataformat-yaml</artifactId>
+                </exclusion>
+
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.datatype</groupId>
+                    <artifactId>jackson-datatype-joda</artifactId>
                 </exclusion>
             </exclusions>
             <scope>compile</scope>
@@ -105,7 +130,7 @@
                             <locations>com.skymoe.swagger.resource</locations>
                             <schemes>http,https</schemes>
                             <host>localhost:9090</host>
-                            <basePath>/api</basePath>
+                            <basePath>/</basePath>
 
                             <info>
                                 <title>天萌RESTFUL API接口说明</title>

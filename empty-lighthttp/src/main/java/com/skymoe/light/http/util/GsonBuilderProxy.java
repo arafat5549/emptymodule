@@ -14,7 +14,7 @@ public class GsonBuilderProxy {
 
 	public Gson create() {
 		return new GsonBuilder()
-		.setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+		//.setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
 		.setDateFormat(DATETIME_FORMAT)
 		.create();
 	}

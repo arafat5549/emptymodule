@@ -7,7 +7,7 @@
 {{/if}}
 
 {{#if security}}
-#### Security
+#### <span class="http_title"  style="background-color: #e5e0c6">Security</span>
 {{/if}}
 
 {{#security}}
@@ -18,12 +18,12 @@
 {{/each}}
 {{/security}}
 
-#### Request请求数据
+#### <span class="http_title"  style="background-color: #e5e0c6">Request请求数据</span>
 
 {{#if consumes}}
 **Content-Type: ** {{join consumes ", "}}{{/if}}
 
-##### Parameters参数信息
+##### <span class="http_title"  style="background-color: #e5e0c6">Parameters参数信息</span>
 {{#if parameters}}
 <table border="1">
     <tr>
@@ -62,7 +62,7 @@
 {{/if}}
 
 
-#### Response响应结果
+#### <span class="http_title"  style="background-color: #e5e0c6">Response响应结果</span>
 
 {{#if produces}}**Content-Type: ** {{join produces ", "}}{{/if}}
 

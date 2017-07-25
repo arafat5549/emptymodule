@@ -32,40 +32,40 @@
 {{#each paths}}
 ## {{@key}}
 {{#this}}
+
 {{#get}}
-### GET
+### <span class="http_method" style="background-color: #0f6ab4;">GET</span>
 {{> operation}}
 {{/get}}
 
 {{#put}}
-### PUT
+### <span class="http_method"  style="background-color: #c5862b">PUT</span>
 {{> operation}}
 {{/put}}
 
 {{#post}}
-### POST
-
+### <span class="http_method"  style="background-color: #10a54a">POST</span>
 {{> operation}}
 
 {{/post}}
 
 {{#delete}}
-### DELETE
+### <span class="http_method"  style="background-color: #a41e22">DELETE</span>
 {{> operation}}
 {{/delete}}
 
 {{#option}}
-### OPTION
+### <span class="http_method"  style="background-color: #0f6ab4">OPTION</span>
 {{> operation}}
 {{/option}}
 
 {{#patch}}
-### PATCH
+### <span class="http_method"  style="background-color: #D38042">PATCH</span>
 {{> operation}}
 {{/patch}}
 
 {{#head}}
-### HEAD
+### <span class="http_method"  style="background-color: #ffd20f">HEAD</span>
 {{> operation}}
 {{/head}}
 
