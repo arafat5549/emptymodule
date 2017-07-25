@@ -94,7 +94,7 @@ public class PkgScanner {
     }
 
     private List<String> loadResource() throws IOException {
-        List<String> list = null;
+        List<String> list = new ArrayList<>();
 
         Enumeration<URL> urls = cl.getResources(pkgPath);
         while (urls.hasMoreElements()) {

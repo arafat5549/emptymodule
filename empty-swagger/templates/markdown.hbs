@@ -10,9 +10,9 @@
 [**联系开发者**](mailto:{{email}})
 {{/contact}}
 
-**Version** {{version}}
+**版本** {{version}}
 
-[**Terms of Service**]({{termsOfService}})
+[**Github主页**]({{termsOfService}})
 
 {{#license}}[**{{name}}**]({{url}}){{/license}}
 
@@ -23,7 +23,7 @@
 {{#if produces}}**Produces:** {{join produces ", "}}{{/if}}
 
 {{#if securityDefinitions}}
-# Security Definitions
+# Security Definitions安全验证机制
 {{/if}}
 {{> security}}
 
@@ -72,17 +72,17 @@
 {{/this}}
 {{/each}}
 
-# Definitions
+# Definitions实体对象定义
 {{#each definitions}}
 ## <a name="/definitions/{{key}}">{{@key}}</a>
 
 <table border="1">
     <tr>
-        <th>name</th>
-        <th>type</th>
-        <th>required</th>
-        <th>description</th>
-        <th>example</th>
+        <th>名称</th>
+        <th>类别</th>
+        <th>必填</th>
+        <th>描述</th>
+        <th>示例</th>
     </tr>
     {{#each this.properties}}
         <tr>
@@ -98,7 +98,7 @@
                     {{^$ref}}{{type}}{{#format}} ({{format}}){{/format}}{{/$ref}}
                 {{/ifeq}}
             </td>
-            <td>{{#required}}required{{/required}}{{^required}}optional{{/required}}</td>
+            <td>{{#required}}必填{{/required}}{{^required}}选填{{/required}}</td>
             <td>{{#description}}{{{description}}}{{/description}}{{^description}}-{{/description}}</td>
             <td>{{example}}</td>
         </tr>

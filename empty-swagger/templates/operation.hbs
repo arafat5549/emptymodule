@@ -18,21 +18,21 @@
 {{/each}}
 {{/security}}
 
-#### Request
+#### Request请求数据
 
 {{#if consumes}}
 **Content-Type: ** {{join consumes ", "}}{{/if}}
 
-##### Parameters
+##### Parameters参数信息
 {{#if parameters}}
 <table border="1">
     <tr>
-        <th>Name</th>
-        <th>Located in</th>
-        <th>Required</th>
-        <th>Description</th>
-        <th>Default</th>
-        <th>Schema</th>
+        <th>名称</th>
+        <th>位于</th>
+        <th>必填</th>
+        <th>描述</th>
+        <th>默认值</th>
+        <th>文件结构</th>
     </tr>
 {{/if}}
 
@@ -40,8 +40,8 @@
 <tr>
     <th>{{name}}</th>
     <td>{{in}}</td>
-    <td>{{#if required}}yes{{else}}no{{/if}}</td>
-    <td>{{description}}{{#if pattern}} (**Pattern**: `{{pattern}}`){{/if}}</td>
+    <td>{{#if required}}是{{else}}否{{/if}}</td>
+    <td>{{description}}{{#if pattern}} (**正则表达式**: `{{pattern}}`){{/if}}</td>
     <td> - </td>
 {{#ifeq in "body"}}
     <td>
@@ -62,12 +62,12 @@
 {{/if}}
 
 
-#### Response
+#### Response响应结果
 
 {{#if produces}}**Content-Type: ** {{join produces ", "}}{{/if}}
 
 
-| Status Code | Reason      | Response Model |
+|    返回码   | 原因        | 响应Model对象  |
 |-------------|-------------|----------------|
 {{#each responses}}| {{@key}}    | {{description}} | {{#schema.$ref}}<a href="{{schema.$ref}}">{{basename schema.$ref}}</a>{{/schema.$ref}}{{#ifeq schema.type "array"}}Array[<a href="{{schema.items.$ref}}">{{basename schema.items.$ref}}</a>]{{/ifeq}}{{^schema}} - {{/schema}}|
 {{/each}}

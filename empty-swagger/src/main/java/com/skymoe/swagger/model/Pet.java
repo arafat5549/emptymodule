@@ -16,6 +16,7 @@
 
 package com.skymoe.swagger.model;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -25,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @XmlRootElement(name = "Pet")
+@ApiModel(value = "Pet(宠物)")
 public class Pet {
   private long id;
   private Category category;

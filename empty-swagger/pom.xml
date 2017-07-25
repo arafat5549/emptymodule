@@ -12,6 +12,7 @@
     <url>http://maven.apache.org</url>
 
     <properties>
+
         <jetty-version>9.0.7.v20131107</jetty-version>
         <jersey2-version>2.4.1</jersey2-version>
         <logback-version>1.0.1</logback-version>
@@ -36,7 +37,18 @@
                     <artifactId>jsr311-api</artifactId>
                 </exclusion>
             </exclusions>
+            <scope>compile</scope>
         </dependency>
+
+
+        <dependency>
+            <groupId>org.glassfish.jersey.containers</groupId>
+            <artifactId>jersey-container-servlet-core</artifactId>
+            <version>${jersey2-version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <!--
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
@@ -47,6 +59,7 @@
             <artifactId>logback-core</artifactId>
             <version>${logback-version}</version>
         </dependency>
+
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
@@ -62,6 +75,7 @@
             <artifactId>jersey-media-multipart</artifactId>
             <version>${jersey2-version}</version>
         </dependency>
+        -->
     </dependencies>
 
     <build>
@@ -70,13 +84,13 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <configuration>
-                    <charset>UTF-8</charset>
-                    <docencoding>UTF-8</docencoding>
-                    <failOnError>false</failOnError>
-                </configuration>
+                <artifactId>maven-compiler-plugin</artifactId>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+            </plugin>
+
 
             <plugin>
                 <groupId>com.github.kongchen</groupId>
@@ -91,7 +105,7 @@
                             <locations>com.skymoe.swagger.resource</locations>
                             <schemes>http,https</schemes>
                             <host>localhost:9090</host>
-                            <basePath></basePath>
+                            <basePath>/api</basePath>
 
                             <info>
                                 <title>天萌RESTFUL API接口说明</title>
@@ -100,14 +114,11 @@
                                 <termsOfService>
                                     https://github.com/arafat5549/emptymodule
                                 </termsOfService>
-
                                 <contact>
                                     <email>arafat5549@gmail.com</email>
                                     <name>WangYao</name>
                                     <url>https://github.com/arafat5549</url>
                                 </contact>
-
-
                                 <license>
                                     <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
                                     <name>Apache 2.0</name>
@@ -120,21 +131,18 @@
 
 
                             <templatePath>${basedir}/templates/strapdown.html.hbs</templatePath>
-                            <outputPath>${basedir}/src/main/resources/document.html</outputPath>
-                            <swaggerDirectory>${basedir}/src/main/resources</swaggerDirectory>
+                            <outputPath>${basedir}/src/main/resources/api/document.html</outputPath>
+                            <swaggerDirectory>${basedir}/src/main/resources/api</swaggerDirectory>
 
                             <securityDefinitions>
                                 <securityDefinition>
                                     <json>/securityDefinitions.json</json>
                                 </securityDefinition>
                             </securityDefinitions>
-
-
                         </apiSource>
                     </apiSources>
-
-
                 </configuration>
+
                 <executions>
                     <execution>
                         <phase>compile</phase>
