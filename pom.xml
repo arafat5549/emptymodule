@@ -29,6 +29,8 @@
         <slf4j.version>1.7.7</slf4j.version>
         <javassist.version> 3.20.0-GA</javassist.version>
 
+
+
     </properties>
 
     <!-- dependencyManagement元素既能够让子模块继承到父模块的依赖配置，又能保证子模块的灵活配置，在dependencyManagement下的依赖声明不会引入实际的依赖，但是能够约束dependencies下的依赖 -->
@@ -124,6 +126,10 @@
                 <version>${javassist.version}</version>
             </dependency>
 
+
+
+
+
         </dependencies>
     </dependencyManagement>
 
@@ -135,6 +141,8 @@
         <module>empty-lighthttp</module>
         <!-- web工程 -->
         <module>empty-web</module>
+        <module>empty-swagger</module>
+        <!-- 用于生成Swagger的API接口 文档和JSON文件 -->
 
     </modules>
 

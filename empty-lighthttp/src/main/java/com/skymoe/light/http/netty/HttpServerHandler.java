@@ -90,7 +90,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
 			String body = executeQuery(request) + System.lineSeparator();
 
 			response = new DefaultFullHttpResponse(HTTP_1_1, OK, Unpooled.copiedBuffer(body, CharsetUtil.UTF_8));
-			response.headers().set(CONTENT_TYPE, this.pathDispather.getContentType(request));
+			//response.headers().set(CONTENT_TYPE, this.pathDispather.getContentType(request));
 			response.headers().set(CONTENT_LENGTH, response.content().readableBytes());
 
 			//添加跨域支持

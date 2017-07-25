@@ -60,7 +60,7 @@ public class BeanScannerTest {
     }
 
     static void resScan(){
-        List<URL> list = getResources("demo.json", Thread.currentThread().getContextClassLoader());
+        List<URL> list = getResources("swagger-ui-master/demo.json", Thread.currentThread().getContextClassLoader());
 
         if(list.size()>0){
             URL url = list.get(0);

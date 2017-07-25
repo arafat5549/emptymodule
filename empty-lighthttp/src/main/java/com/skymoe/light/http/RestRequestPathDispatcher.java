@@ -37,6 +37,13 @@ import java.util.regex.Pattern;
  */
 public class RestRequestPathDispatcher<T> implements  IRequestPathDispather {
 
+    private static String SUFFIXS[] = {".json",".js",".css"};
+    //静态文件处理
+    public static boolean isStaticFile(String path){
+        return false;
+    }
+
+
     private static final String EMPTY_STRING = "";
 
     private static final String CONTENT_TYPE_CHARSET_PART = " charset=UTF-8";

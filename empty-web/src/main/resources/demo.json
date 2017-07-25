@@ -13,8 +13,10 @@
             "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
         }
     },
-    "host": "petstore.swagger.io",
-    "basePath": "/v2",
+    //"host": "petstore.swagger.io",
+    //"basePath": "/v2",
+    "host": "localhost:9090",
+    "basePath": "",
     "tags": [
         {
             "name": "pet",
@@ -40,6 +42,8 @@
     "schemes": [
         "http"
     ],
+    //Rest URl 路径定义
+    
     "paths": {
         "/pet": {
             "post": {
@@ -872,6 +876,10 @@
             "in": "header"
         }
     },
+
+
+
+    // Bean对象类型定义
     "definitions": {
         "Order": {
             "type": "object",
@@ -975,6 +983,8 @@
                 "name": "Tag"
             }
         },
+
+
         "Pet": {
             "type": "object",
             "required": [
